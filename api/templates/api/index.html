@@ -133,12 +133,12 @@
                             <div class="col-xs-12 col-sm-4">
                                     <label>Range Picker</label>
                                     <div class="input-daterange input-group">
-                                            <input type="text" class="input-sm form-control" name="start" />
+                                            <input type="text" class="input-sm form-control j-datetime" id = "start" name="start" />
                                             <span class="input-group-addon">
                                                 <i class="fa fa-exchange"></i>
                                             </span>
 
-                                            <input type="text" class="input-sm form-control" name="end" />
+                                            <input type="text" class="input-sm form-control j-datetime" id = "end" name="end" />
                                     </div>
                             </div>
 
@@ -213,21 +213,7 @@
             });
     }
 
-    jQuery(function($) {
-        
-        $('#id-disable-check').on('click', function() {
-            var inp = $('#form-input-readonly').get(0);
-            if(inp.hasAttribute('disabled')) {
-                inp.setAttribute('readonly' , 'true');
-                inp.removeAttribute('disabled');
-                inp.value="This text field is readonly!";
-            }
-            else {
-                inp.setAttribute('disabled' , 'disabled');
-                inp.removeAttribute('readonly');
-                inp.value="This text field is disabled!";
-            }
-        });
+    jQuery(function($) {            
         //start to go 
         get_coin();
         //
@@ -266,7 +252,89 @@
             });
         });
     
-        
+
+        //datepicker plugin
+        //link
+        $('.date-picker').datepicker({
+            autoclose: true,
+            todayHighlight: true
+        })
+        //show datepicker when clicking on the icon
+        .next().on(ace.click_event, function(){
+            $(this).prev().focus();
+        });
+    
+        //or change it into a date range picker
+        //$('.input-daterange').datepicker({autoclose:true});
+        $('.j-datetime').datetimepicker({
+         format: 'YYYY-MM-DD HH:mm:ss',//use this option to display seconds
+         icons: {
+            time: 'fa fa-clock-o',
+            date: 'fa fa-calendar',
+            up: 'fa fa-chevron-up',
+            down: 'fa fa-chevron-down',
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
+            today: 'fa fa-arrows ',
+            clear: 'fa fa-trash',
+            close: 'fa fa-times'
+         }
+        }).next().on(ace.click_event, function(){
+            $(this).prev().focus();
+        });
+       
+    
+    
+        //to translate the daterange picker, please copy the "examples/daterange-fr.js" contents here before initialization
+        $('input[name=date-range-picker]').daterangepicker({
+            'applyClass' : 'btn-sm btn-success',
+            'cancelClass' : 'btn-sm btn-default',
+            locale: {
+                applyLabel: 'Apply',
+                cancelLabel: 'Cancel',
+            }
+        })
+        .prev().on(ace.click_event, function(){
+            $(this).next().focus();
+        });
+    
+    
+        $('#timepicker1').timepicker({
+            minuteStep: 1,
+            showSeconds: true,
+            showMeridian: false,
+            disableFocus: true,
+            icons: {
+                up: 'fa fa-chevron-up',
+                down: 'fa fa-chevron-down'
+            }
+        }).on('focus', function() {
+            $('#timepicker1').timepicker('showWidget');
+        }).next().on(ace.click_event, function(){
+            $(this).prev().focus();
+        });
+                    
+        //
+        if(!ace.vars['old_ie']) $('#date-timepicker1').datetimepicker({
+         //format: 'MM/DD/YYYY h:mm:ss A',//use this option to display seconds
+         icons: {
+            time: 'fa fa-clock-o',
+            date: 'fa fa-calendar',
+            up: 'fa fa-chevron-up',
+            down: 'fa fa-chevron-down',
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
+            today: 'fa fa-arrows ',
+            clear: 'fa fa-trash',
+            close: 'fa fa-times'
+         }
+        }).next().on(ace.click_event, function(){
+            $(this).prev().focus();
+        });
+
+
+
+
         if(!ace.vars['touch']) {
             $('.chosen-select').chosen({allow_single_deselect:true}); 
             //resize the chosen on window resize
@@ -533,69 +601,7 @@
         //$('#spinner1').closest('.ace-spinner').spinner('value', 0);//reset to 0
     
     
-        //datepicker plugin
-        //link
-        $('.date-picker').datepicker({
-            autoclose: true,
-            todayHighlight: true
-        })
-        //show datepicker when clicking on the icon
-        .next().on(ace.click_event, function(){
-            $(this).prev().focus();
-        });
-    
-        //or change it into a date range picker
-        $('.input-daterange').datepicker({autoclose:true});
-    
-    
-        //to translate the daterange picker, please copy the "examples/daterange-fr.js" contents here before initialization
-        $('input[name=date-range-picker]').daterangepicker({
-            'applyClass' : 'btn-sm btn-success',
-            'cancelClass' : 'btn-sm btn-default',
-            locale: {
-                applyLabel: 'Apply',
-                cancelLabel: 'Cancel',
-            }
-        })
-        .prev().on(ace.click_event, function(){
-            $(this).next().focus();
-        });
-    
-    
-        $('#timepicker1').timepicker({
-            minuteStep: 1,
-            showSeconds: true,
-            showMeridian: false,
-            disableFocus: true,
-            icons: {
-                up: 'fa fa-chevron-up',
-                down: 'fa fa-chevron-down'
-            }
-        }).on('focus', function() {
-            $('#timepicker1').timepicker('showWidget');
-        }).next().on(ace.click_event, function(){
-            $(this).prev().focus();
-        });
         
-        
-    
-        
-        if(!ace.vars['old_ie']) $('#date-timepicker1').datetimepicker({
-         //format: 'MM/DD/YYYY h:mm:ss A',//use this option to display seconds
-         icons: {
-            time: 'fa fa-clock-o',
-            date: 'fa fa-calendar',
-            up: 'fa fa-chevron-up',
-            down: 'fa fa-chevron-down',
-            previous: 'fa fa-chevron-left',
-            next: 'fa fa-chevron-right',
-            today: 'fa fa-arrows ',
-            clear: 'fa fa-trash',
-            close: 'fa fa-times'
-         }
-        }).next().on(ace.click_event, function(){
-            $(this).prev().focus();
-        });
         
     
         $('#colorpicker1').colorpicker();
