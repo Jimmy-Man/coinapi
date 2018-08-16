@@ -222,6 +222,7 @@
                     if(res.status){
                         symbol_text = '';
                         $.each(res.data,function(index,val){
+                            //var st = val.replace('/','');
                             symbol_text += '<option value="'+val+'" >'+val+'</option>';
                         });
                         $("#symbol").html(symbol_text);      
@@ -275,7 +276,7 @@
                 type:'GET',
                 success:function(res){
                     if(res.status){
-
+                            
                     }else{
 
                     }
@@ -284,7 +285,7 @@
 
                 }
             });
-            alert(data)
+            //alert(data)
         });
        
     

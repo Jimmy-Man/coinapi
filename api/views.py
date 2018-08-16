@@ -14,6 +14,8 @@ from django.contrib.auth import authenticate
 ##
 from django.utils.translation import gettext
 
+from data_api.houbiapi.huobiapi import huobiapi
+
 # Create your views here.
 
 #PLATFORM_API_LIAT = ['HUOBI','BTN','']
@@ -30,13 +32,11 @@ COIN_LIST['BTN']   = {}
 
 
 def index(request):
-    #return HttpResponse('Hello world')
-
     ## check login
     admin_id = request.session.get('admin_id',default=0)
-    if admin_id <1:
+    if admin_id < 1:
         return HttpResponseRedirect('/api/login')
-    
+
     content = {}
     text = {}
     text['title'] = gettext('行情分析')
@@ -61,13 +61,47 @@ def ajax(request):
         var_list = COIN_LIST[exchange_type][coin_name]
         var_return['data'] = var_list
         var_return['status'] = 1;
+    elif get_type == 'analysis':
+        cycle = request.GET['cycle']
+        exchange_type = request.GET['exchange_type']
+        coin_name     = request.GET['coin_name']
+        symbol        = request.GET['symbol']
+        start         = request.GET['start']
+        end           = request.GET['end']
+        symbol = symbol.lower().replace('/','')
+
+        coin_api =  huobiapi('06e39fd5-290a27b3-c5bb0ff0-40e2c','67f2faa5-9507f01e-b14aa6c3-ca24a')
+        ## get kline
+        kline = coin_api.get_kline(symbol,cycle)
+        kl = kline['data']
+        for item in kline['data']:
+            # K线id  
+            var_id      = item['id']
+            # 开盘价
+            var_open    = item['open']
+            # 收盘价,当K线为最晚的一根时，是最新成交价
+            var_close   = item['close']
+            # 最低价
+            var_low     = item['low']
+            # 最高价
+            var_high    = item['high']
+            # 成交量
+            var_amount  = item['amount']
+            # 成交笔数
+            var_count   = item['count']
+            # 成交额, 即 sum(每一笔成交价 * 该笔的成交量)
+            var_vol     = item['vol']
+
+        ai = (kl[0]['close'] - kl[len(kline)-1]['close'])/kl[0]['close']
+
             
+        #return HttpResponse(ret)
+        var_return['status'] =1;
+        var_return['data'] = {'ai':ai}
+        #var_return['data']['bb'] = ai
+        return JsonResponse(var_return)
+                
     return JsonResponse(var_return)
-    
-
-        
-    
-
     
 
 def login(request):

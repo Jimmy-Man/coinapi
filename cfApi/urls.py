@@ -16,6 +16,8 @@ Including another URLconf
 
 ##from django.urls import path
 ## include include module
+from django.urls import include,path
+
 from django.conf.urls import include,url
 from django.contrib import admin
 
@@ -24,7 +26,8 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^api/',include('api.urls')),
-    url(r'^admin/',admin.site.urls)
+    url(r'^admin/',admin.site.urls),
+    path('web/',include('web.urls'))
     #path('admin/', admin.site.urls),
     #path(r'^index/', ad.index),
     #path(r'^index/',ai.index.urls),
