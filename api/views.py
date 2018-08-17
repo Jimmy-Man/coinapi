@@ -15,6 +15,8 @@ from django.contrib.auth import authenticate
 from django.utils.translation import gettext
 
 from data_api.houbiapi.huobiapi import huobiapi
+import datetime
+import time
 
 # Create your views here.
 
@@ -67,38 +69,58 @@ def ajax(request):
         coin_name     = request.GET['coin_name']
         symbol        = request.GET['symbol']
         start         = request.GET['start']
-        end           = request.GET['end']
+        #end           = request.GET['end']
+        end           = time.localtime(time.time())
         symbol = symbol.lower().replace('/','')
 
+        ## math times
+        start_time = datetime.datetime.strptime(start,"%Y-%m-%d %H:%M:%S")
+        #end_time   = datetime.datetime.strptime(datetime.time(),"%Y-%m-%d %H:%M:%S")
+        #timeArray = time.localtime(time.time())
+        end        = time.strftime('%Y-%m-%d %H:%M:%S',end)
+        end_time   = datetime.datetime.strptime(end,"%Y-%m-%d %H:%M:%S")
+        #return HttpResponse(end_time)
+        middle = end_time - start_time
+        #return HttpResponse(middle.days)
+        limit = 150
+        if cycle == '15min':
+            limit = middle.seconds%900
+        elif cycle == '1day':
+            limit =  int(middle.days)
+            #return HttpResponse(limit)
+        if limit < 2:limit =2
+            
         coin_api =  huobiapi('06e39fd5-290a27b3-c5bb0ff0-40e2c','67f2faa5-9507f01e-b14aa6c3-ca24a')
         ## get kline
-        kline = coin_api.get_kline(symbol,cycle)
-        kl = kline['data']
-        for item in kline['data']:
-            # K线id  
-            var_id      = item['id']
-            # 开盘价
-            var_open    = item['open']
-            # 收盘价,当K线为最晚的一根时，是最新成交价
-            var_close   = item['close']
-            # 最低价
-            var_low     = item['low']
-            # 最高价
-            var_high    = item['high']
-            # 成交量
-            var_amount  = item['amount']
-            # 成交笔数
-            var_count   = item['count']
-            # 成交额, 即 sum(每一笔成交价 * 该笔的成交量)
-            var_vol     = item['vol']
-
-        ai = (kl[0]['close'] - kl[len(kline)-1]['close'])/kl[0]['close']
-
-            
-        #return HttpResponse(ret)
-        var_return['status'] =1;
-        var_return['data'] = {'ai':ai}
-        #var_return['data']['bb'] = ai
+        kline = coin_api.get_kline(symbol,cycle,limit)
+        if kline['status'] =='ok':
+            kl = kline['data']
+            for item in kline['data']:
+                # K线id  
+                var_id      = item['id']
+                # 开盘价
+                var_open    = item['open']
+                # 收盘价,当K线为最晚的一根时，是最新成交价
+                var_close   = item['close']
+                # 最低价
+                var_low     = item['low']
+                # 最高价
+                var_high    = item['high']
+                # 成交量
+                var_amount  = item['amount']
+                # 成交笔数
+                var_count   = item['count']
+                # 成交额, 即 sum(每一笔成交价 * 该笔的成交量)
+                var_vol     = item['vol']
+            return JsonResponse(kline)
+            ai = (kl[0]['close'] - kl[len(kline)-1]['close'])/kl[0]['close']
+                
+            #return HttpResponse(ret)
+            var_return['status'] = 1;
+            var_return['data'] = {'ai':ai}
+            #var_return['data']['bb'] = ai
+        else:
+            var_return['error'] = '获取数据失败'
         return JsonResponse(var_return)
                 
     return JsonResponse(var_return)
