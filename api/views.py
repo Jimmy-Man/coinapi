@@ -112,7 +112,8 @@ def ajax(request):
                 var_count   = item['count']
                 # 成交额, 即 sum(每一笔成交价 * 该笔的成交量)
                 var_vol     = item['vol']
-            return JsonResponse(kline)
+            #return JsonResponse(kline)
+            #a = kl[0]['close']
             ai = (kl[0]['close'] - kl[len(kline)-1]['close'])/kl[0]['close']
                 
             #return HttpResponse(ret)
